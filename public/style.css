@@ -3,6 +3,7 @@
     bottom: 15px;
     right: 15px;
     display: none;
+    opacity: .5;
 }
 
 .to-top._show {
