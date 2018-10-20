@@ -9,8 +9,13 @@ function ready() {
     word.focus();
 
     form.addEventListener('submit', formSubmitHandler);
+
     function formSubmitHandler(event) {
         event.preventDefault();
+        formSubmit();
+    }
+
+    function formSubmit() {
 
         resultContainer.innerHTML = 'loading...';
 
@@ -30,7 +35,8 @@ function ready() {
             resultContainer.innerHTML = '';
 
             if (event.target.status !== 200) {
-                throw event.target.status + ': ' + event.target.statusText;
+                resultContainer.innerText = event.target.status + ': ' + event.target.statusText;
+                return;
             }
 
             let response = JSON.parse(event.target.responseText);
@@ -41,36 +47,53 @@ function ready() {
             }
 
             // noinspection JSUnresolvedVariable
-            response.results[0].lexicalEntries.forEach(function (lexicalEntry) {
-                resultContainer.innerHTML += '<h1>' + lexicalEntry.text + '</h1>';
+            if (response.results && response.results[0] && response.results[0].lexicalEntries) {
                 // noinspection JSUnresolvedVariable
-                resultContainer.innerHTML += '<p><b>' + lexicalEntry.lexicalCategory + '</b></p>';
-                // noinspection JSUnresolvedVariable
-                lexicalEntry.pronunciations.forEach(function (pronunciation) {
-                    // noinspection JSUnresolvedVariable
-                    if (pronunciation.audioFile) {
-                        // noinspection JSUnresolvedVariable
-                        resultContainer.innerHTML += '<audio controls><source src="' + pronunciation.audioFile + '" type="audio/mpeg"></audio>';
+                response.results[0].lexicalEntries.forEach(function (lexicalEntry) {
+                    if (lexicalEntry.text) {
+                        resultContainer.innerHTML += '<h1>' + lexicalEntry.text + '</h1>';
                     }
-                });
-                lexicalEntry.entries.forEach(function (entry) {
                     // noinspection JSUnresolvedVariable
-                    entry.senses.forEach(function (sense) {
-                        // noinspection JSUnresolvedVariable
-                        sense.definitions.forEach(function (definition) {
-                            resultContainer.innerHTML += '<p>Definition: ' + definition + '</p>';
+                    if (lexicalEntry.lexicalCategory) {
+                        resultContainer.innerHTML += '<p><b>' + lexicalEntry.lexicalCategory + '</b></p>';
+                    }
+                    // noinspection JSUnresolvedVariable
+                    if (lexicalEntry.pronunciations) {
+                        lexicalEntry.pronunciations.forEach(function (pronunciation) {
+                            // noinspection JSUnresolvedVariable
+                            if (pronunciation.audioFile) {
+                                // noinspection JSUnresolvedVariable
+                                resultContainer.innerHTML += '<audio controls><source src="' + pronunciation.audioFile + '" type="audio/mpeg"></audio>';
+                            }
                         });
-                        // noinspection JSUnresolvedVariable
-                        if (sense.examples) {
-                            sense.examples.forEach(function (example) {
-                                if (example.text) {
-                                    resultContainer.innerHTML += '<p>Example: <cite>' + example.text + '</cite></p>';
+                        if (lexicalEntry.entries) {
+                            lexicalEntry.entries.forEach(function (entry) {
+                                // noinspection JSUnresolvedVariable
+                                if (entry.senses) {
+                                    // noinspection JSUnresolvedVariable
+                                    entry.senses.forEach(function (sense) {
+                                        // noinspection JSUnresolvedVariable
+                                        if (sense.definitions) {
+                                            // noinspection JSUnresolvedVariable
+                                            sense.definitions.forEach(function (definition) {
+                                                resultContainer.innerHTML += '<p>Definition: ' + chopText(definition) + '</p>';
+                                            });
+                                        }
+                                        // noinspection JSUnresolvedVariable
+                                        if (sense.examples) {
+                                            sense.examples.forEach(function (example) {
+                                                if (example.text) {
+                                                    resultContainer.innerHTML += '<p>Example: <cite>' + chopText(example.text) + '</cite></p>';
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             });
                         }
-                    });
+                    }
                 });
-            });
+            }
 
             word.value = '';
             word.blur();
@@ -84,7 +107,26 @@ function ready() {
         }
     }
 
+    function chopText(text) {
+        let result = '';
+
+        let textWords = text.split(' ');
+        textWords.forEach(function (textWord) {
+            result += ' ' + '<span class="js-text-word" onclick="selectTextWord(this)">' + textWord + '</span>';
+        });
+
+        return result;
+    }
+
+    function selectTextWord(textWordElement) {
+        word.value = textWordElement.innerText.replace(/[^A-Za-z]+/, '');
+        formSubmit();
+    }
+
+    window.selectTextWord = selectTextWord;
+
     toTopButton.addEventListener('click', toTopButtonClickHandler);
+
     function toTopButtonClickHandler() {
         toTopButton.classList.remove('_show');
         word.focus();
