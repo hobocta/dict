@@ -1,0 +1,7 @@
+{
+    "require": {
+        "php": "^7.1",
+        "symfony/cache": "^4.1",
+        "monolog/monolog": "^1.23"
+    }
+}
