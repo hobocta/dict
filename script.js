@@ -24,6 +24,8 @@ function ready() {
         xhr.onreadystatechange = function (event) {
             if (event.target.readyState !== 4) return;
 
+            resultContainer.innerHTML = '';
+
             if (event.target.status !== 200) {
                 throw event.target.status + ': ' + event.target.statusText;
             }
@@ -37,7 +39,7 @@ function ready() {
 
             // noinspection JSUnresolvedVariable
             response.results[0].lexicalEntries.forEach(function (lexicalEntry) {
-                console.log('lexicalEntry', lexicalEntry);
+                resultContainer.innerHTML += '<h1>' + lexicalEntry.text + '</h1>';
                 // noinspection JSUnresolvedVariable
                 resultContainer.innerHTML += '<p><b>' + lexicalEntry.lexicalCategory + '</b></p>';
                 // noinspection JSUnresolvedVariable
@@ -53,11 +55,22 @@ function ready() {
                     entry.senses.forEach(function (sense) {
                         // noinspection JSUnresolvedVariable
                         sense.definitions.forEach(function (definition) {
-                            resultContainer.innerHTML += '<p>' + definition + '</p>';
+                            resultContainer.innerHTML += '<p>Definition: ' + definition + '</p>';
                         });
+                        // noinspection JSUnresolvedVariable
+                        if (sense.examples) {
+                            sense.examples.forEach(function (example) {
+                                if (example.text) {
+                                    resultContainer.innerHTML += '<p>Example: <cite>' + example.text + '</cite></p>';
+                                }
+                            });
+                        }
                     });
                 });
             });
+
+            word.value = '';
+            word.blur();
         }
     }
 }

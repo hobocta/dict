@@ -14,9 +14,9 @@
     <div class="row justify-content-md-center">
         <div class="col-md-8">
 
-            <form class="js-form">
+            <form class="js-form" autocomplete="off" style="margin-top: 33vh">
                 <input name="word" class="js-form-word" autofocus>
-                <input type="submit">
+                <input type="submit" value="&rarr;">
             </form>
             <div class="js-form-result" style="margin-top: 15px;"></div>
         </div>
