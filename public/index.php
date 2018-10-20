@@ -13,10 +13,9 @@
 <div class="container" style="margin-top: 33vh; margin-bottom: 33vh;">
     <div class="row justify-content-md-center">
         <div class="col-md-8">
-
-            <form class="js-form" autocomplete="off">
-                <input name="word" class="js-form-word" autofocus>
-                <input type="submit" value="&rarr;">
+            <form class="form-inline js-form" autocomplete="off">
+                <input class="form-control js-form-word" name="word">
+                <input class="btn btn-primary" type="submit" value="&rarr;" style="margin-left: 15px;">
             </form>
             <div class="js-form-result" style="margin-top: 15px;"></div>
         </div>

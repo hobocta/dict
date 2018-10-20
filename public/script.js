@@ -5,6 +5,8 @@ function ready() {
     let word = form.getElementsByClassName('js-form-word')[0];
     let resultContainer = document.getElementsByClassName('js-form-result')[0];
 
+    word.focus();
+
     form.addEventListener('submit', formSubmitHandler);
     function formSubmitHandler(event) {
         event.preventDefault();
