@@ -4,7 +4,7 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../../vendor/autoload.php';
 
 $requestRaw = file_get_contents('php://input');
 
@@ -16,7 +16,7 @@ function echo_json(array $result)
 try {
     $result = array();
 
-    $config = require __DIR__ . '/../../config/config.php';
+    $config = require __DIR__ . '/../../../config/config.php';
     if (empty($config)) {
         throw new \Exception('Empty config');
     }
@@ -92,13 +92,13 @@ try {
 
             $logger = new Logger('oxforddictionaries_entries');
             $logger->pushHandler(
-                new RotatingFileHandler(__DIR__ . '/../../logs/oxforddictionaries_entries.log')
+                new RotatingFileHandler(__DIR__ . '/../../../logs/oxforddictionaries_entries.log')
             );
             $logger->debug('', ['word' => $word, '$params' => $params, 'response' => $gatewayResponse]);
         } catch (\Exception $e) {
             $logger = new Logger('oxforddictionaries_entries_error');
             $logger->pushHandler(
-                new RotatingFileHandler(__DIR__ . '/../../logs/oxforddictionaries_entries_error.log')
+                new RotatingFileHandler(__DIR__ . '/../../../logs/oxforddictionaries_entries_error.log')
             );
             $logger->error('', ['word' => $word, '$params' => $params, 'exception' => $e]);
 
@@ -129,7 +129,7 @@ try {
     global $requestRaw;
 
     $logger = new Logger('api_word_error');
-    $logger->pushHandler(new RotatingFileHandler(__DIR__ . '/../../logs/api_word_error.log'));
+    $logger->pushHandler(new RotatingFileHandler(__DIR__ . '/../../../logs/api_word_error.log'));
     $logger->error('', ['request' => $requestRaw, 'exception' => $e]);
 
     echo_json(array('error' => $e->getMessage()));
