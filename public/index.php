@@ -10,11 +10,11 @@
           crossorigin="anonymous">
 </head>
 <body>
-<div class="container" style="margin-top: 15px; margin-bottom: 15px;">
+<div class="container" style="margin-top: 33vh; margin-bottom: 33vh;">
     <div class="row justify-content-md-center">
         <div class="col-md-8">
 
-            <form class="js-form" autocomplete="off" style="margin-top: 33vh">
+            <form class="js-form" autocomplete="off">
                 <input name="word" class="js-form-word" autofocus>
                 <input type="submit" value="&rarr;">
             </form>
