@@ -11,16 +11,16 @@
 </head>
 <body>
 <div class="container" style="margin-top: 25vh; margin-bottom: 25vh;">
-    <div class="row justify-content-md-center">
-        <div class="col-md-8">
-            <form class="form-inline js-form" autocomplete="off">
-                <div class="form-group mb-2">
-                    <input class="form-control js-form-word" name="word">
-                </div>
-                <input class="btn btn-primary mb-2" type="submit" value="&rarr;" style="margin-left: 15px;">
-            </form>
-            <div class="js-form-result" style="margin-top: 15px;"></div>
+    <form class="row js-form" autocomplete="off">
+        <div class="form-group col-9">
+            <input class="form-control js-form-word" name="word">
         </div>
+        <div class="form-group col-3">
+            <input class="btn btn-primary" type="submit" value="&rarr;">
+        </div>
+    </form>
+    <div class="row col-12">
+        <div class="js-form-result"></div>
     </div>
 </div>
 <script src="script.js"></script>
