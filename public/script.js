@@ -4,6 +4,7 @@ function ready() {
     let form = document.getElementsByClassName('js-form')[0];
     let word = form.getElementsByClassName('js-form-word')[0];
     let resultContainer = document.getElementsByClassName('js-form-result')[0];
+    let toTopButton = document.getElementsByClassName('to-top')[0];
 
     word.focus();
 
@@ -73,6 +74,23 @@ function ready() {
 
             word.value = '';
             word.blur();
+            toTopButton.classList.add('_show');
+            resultContainer.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
+    }
+
+    toTopButton.addEventListener('click', toTopButtonClickHandler);
+    function toTopButtonClickHandler() {
+        toTopButton.classList.remove('_show');
+        word.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end'
+        });
+        setTimeout(function () {
+            word.focus();
+        }, 250);
     }
 }
