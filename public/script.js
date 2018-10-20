@@ -75,22 +75,18 @@ function ready() {
             word.value = '';
             word.blur();
             toTopButton.classList.add('_show');
-            resultContainer.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            setTimeout(function () {
+                resultContainer.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 250);
         }
     }
 
     toTopButton.addEventListener('click', toTopButtonClickHandler);
     function toTopButtonClickHandler() {
         toTopButton.classList.remove('_show');
-        word.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
-        });
-        setTimeout(function () {
-            word.focus();
-        }, 250);
+        word.focus();
     }
 }
