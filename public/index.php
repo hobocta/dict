@@ -10,12 +10,14 @@
           crossorigin="anonymous">
 </head>
 <body>
-<div class="container" style="margin-top: 33vh; margin-bottom: 33vh;">
+<div class="container" style="margin-top: 25vh; margin-bottom: 25vh;">
     <div class="row justify-content-md-center">
         <div class="col-md-8">
             <form class="form-inline js-form" autocomplete="off">
-                <input class="form-control js-form-word" name="word">
-                <input class="btn btn-primary" type="submit" value="&rarr;" style="margin-left: 15px;">
+                <div class="form-group mb-2">
+                    <input class="form-control js-form-word" name="word">
+                </div>
+                <input class="btn btn-primary mb-2" type="submit" value="&rarr;" style="margin-left: 15px;">
             </form>
             <div class="js-form-result" style="margin-top: 15px;"></div>
         </div>
