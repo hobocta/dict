@@ -6,9 +6,44 @@ function ready() {
     let resultElement = document.getElementsByClassName('js-form-result')[0];
     let toTopButtonElement = document.getElementsByClassName('to-top')[0];
 
-    wordElement.focus();
+    init();
 
-    formElement.addEventListener('submit', formSubmitHandler);
+    function init() {
+        initEventsListeners();
+        initHistoryEvents();
+        initForm();
+    }
+
+    function initForm() {
+        if (window.location.hash) {
+            let word = window.location.hash.replace(/^#/, '');
+
+            if (word) {
+                searchWord(word);
+                return;
+            }
+        }
+
+        wordElement.focus();
+    }
+
+    function initHistoryEvents() {
+        // noinspection SpellCheckingInspection
+        window.onpopstate = function (event) {
+            if (event.state && event.state.word) {
+                searchWord(event.state.word);
+            } else {
+                wordElement.value = '';
+                resultElement.innerHTML = '';
+            }
+        };
+    }
+
+    function initEventsListeners() {
+        formElement.addEventListener('submit', formSubmitHandler);
+
+        toTopButtonElement.addEventListener('click', toTopButtonClickHandler);
+    }
 
     function formSubmitHandler(event) {
         event.preventDefault();
@@ -117,16 +152,6 @@ function ready() {
         }
     }
 
-    // noinspection SpellCheckingInspection
-    window.onpopstate = function (event) {
-        if (event.state && event.state.word) {
-            searchWord(event.state.word);
-        } else {
-            wordElement.value = '';
-            resultElement.innerHTML = '';
-        }
-    };
-
     function chopText(text) {
         let result = '';
 
@@ -142,14 +167,12 @@ function ready() {
         searchWord(textWordElement.innerText.replace(/[^A-Za-z]+/, ''));
     }
 
+    window.selectTextWord = selectTextWord;
+
     function searchWord(word) {
         wordElement.value = word;
         formSubmit();
     }
-
-    window.selectTextWord = selectTextWord;
-
-    toTopButtonElement.addEventListener('click', toTopButtonClickHandler);
 
     function toTopButtonClickHandler() {
         toTopButtonElement.classList.remove('_show');
