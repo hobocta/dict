@@ -58,7 +58,7 @@ function ready() {
     function formSubmit() {
         resultElement.innerHTML = 'loading...';
 
-        let word = wordElement.value.toLowerCase();
+        let word = filterWordString(wordElement.value);
         let data = {word: word};
         let json = JSON.stringify(data);
 
@@ -178,6 +178,10 @@ function ready() {
         }
     }
 
+    function filterWordString(word) {
+        return word.trim().toLowerCase().replace(/[^a-z]+/, '');
+    }
+
     function chopText(text) {
         let result = '';
 
@@ -196,7 +200,7 @@ function ready() {
     window.selectTextWord = selectTextWord;
 
     function searchWord(word) {
-        word = word.toLowerCase();
+        word = filterWordString(word);
         wordElement.value = word;
         formSubmit();
     }

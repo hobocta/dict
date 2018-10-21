@@ -34,7 +34,7 @@ try {
         throw new \Exception('Empty word');
     }
 
-    if (!preg_match('/^[A-Za-z]+$/', $request['word'])) {
+    if (!preg_match('/^[a-z]+$/', $request['word'])) {
         throw new \Exception('Incorrect word');
     }
 
