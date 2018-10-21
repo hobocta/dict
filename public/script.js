@@ -17,11 +17,8 @@ function ready() {
     function initForm() {
         if (window.location.hash) {
             let word = window.location.hash.replace(/^#/, '');
-
-            if (word) {
-                searchWord(word);
-                return;
-            }
+            searchWord(word);
+            return;
         }
 
         wordElement.focus();
