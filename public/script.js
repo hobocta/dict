@@ -56,10 +56,10 @@ function ready() {
     }
 
     function formSubmit() {
-
         resultElement.innerHTML = 'loading...';
 
-        let data = {word: wordElement.value};
+        let word = wordElement.value.toLowerCase();
+        let data = {word: word};
         let json = JSON.stringify(data);
 
         let xhr = new XMLHttpRequest();
@@ -99,43 +99,64 @@ function ready() {
                     }
                     // noinspection JSUnresolvedVariable
                     if (lexicalEntry.pronunciations) {
+                        let pronunciations = [];
+
                         lexicalEntry.pronunciations.forEach(function (pronunciation) {
+                            // noinspection JSUnresolvedVariable
+                            if (
+                                pronunciation.dialects
+                                && pronunciation.phoneticSpelling
+                                && pronunciations.indexOf(pronunciation.phoneticSpelling) === -1
+                            ) {
+                                pronunciations.push(pronunciation.phoneticSpelling);
+                                // noinspection JSUnresolvedVariable
+                                resultElement.innerHTML += '<p>' + pronunciation.dialects + ': <code>' + pronunciation.phoneticSpelling + '</code></p>';
+                            }
+
                             // noinspection JSUnresolvedVariable
                             if (pronunciation.audioFile) {
                                 // noinspection JSUnresolvedVariable
                                 resultElement.innerHTML += '<audio controls><source src="' + pronunciation.audioFile + '" type="audio/mpeg"></audio>';
                             }
                         });
-                        if (lexicalEntry.entries) {
-                            lexicalEntry.entries.forEach(function (entry) {
+                    }
+
+                    if (lexicalEntry.entries) {
+                        lexicalEntry.entries.forEach(function (entry) {
+                            // noinspection JSUnresolvedVariable
+                            if (entry.senses) {
                                 // noinspection JSUnresolvedVariable
-                                if (entry.senses) {
+                                entry.senses.forEach(function (sense) {
                                     // noinspection JSUnresolvedVariable
-                                    entry.senses.forEach(function (sense) {
+                                    if (sense.definitions) {
                                         // noinspection JSUnresolvedVariable
-                                        if (sense.definitions) {
-                                            // noinspection JSUnresolvedVariable
-                                            sense.definitions.forEach(function (definition) {
-                                                resultElement.innerHTML += '<p>Definition: ' + chopText(definition) + '</p>';
-                                            });
-                                        }
-                                        // noinspection JSUnresolvedVariable
-                                        if (sense.examples) {
-                                            sense.examples.forEach(function (example) {
-                                                if (example.text) {
-                                                    resultElement.innerHTML += '<p>Example: <cite>' + chopText(example.text) + '</cite></p>';
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                                        sense.definitions.forEach(function (definition) {
+                                            resultElement.innerHTML += '<p>Definition: ' + chopText(definition) + '</p>';
+                                        });
+                                    }
+                                    // noinspection JSUnresolvedVariable
+                                    if (sense.examples) {
+                                        sense.examples.forEach(function (example) {
+                                            if (example.text) {
+                                                resultElement.innerHTML += '<p>Example: <cite>' + chopText(example.text) + '</cite></p>';
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    if (lexicalEntry.text) {
+                        resultElement.innerHTML += '<p>';
+                        resultElement.innerHTML += '<a target="_blank" href="https://translate.google.com/#en/ru/' + lexicalEntry.text + '">Translate</a>, ';
+                        resultElement.innerHTML += '<a target="_blank" href="https://www.google.ru/search?q=' + lexicalEntry.text + '&tbm=isch">images</a>';
+                        resultElement.innerHTML += '</p>';
                     }
                 });
             }
 
-            historyPushState(wordElement.value);
+            historyPushState(word);
 
             wordElement.value = '';
             wordElement.blur();
@@ -145,7 +166,7 @@ function ready() {
                     behavior: 'smooth',
                     block: 'start'
                 });
-            }, 250);
+            }, 300);
         }
     }
 
@@ -167,6 +188,7 @@ function ready() {
     window.selectTextWord = selectTextWord;
 
     function searchWord(word) {
+        word = word.toLowerCase();
         wordElement.value = word;
         formSubmit();
     }
