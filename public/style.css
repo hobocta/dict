@@ -9,3 +9,7 @@
 .to-top._show {
     display: block;
 }
+
+.text-word {
+    cursor: pointer;
+}

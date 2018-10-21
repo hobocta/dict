@@ -95,7 +95,7 @@ function ready() {
                     }
                     // noinspection JSUnresolvedVariable
                     if (lexicalEntry.lexicalCategory) {
-                        resultElement.innerHTML += '<p><b>' + lexicalEntry.lexicalCategory + '</b></p>';
+                        resultElement.innerHTML += '<p><b>' + chopText(lexicalEntry.lexicalCategory) + '</b></p>';
                     }
                     // noinspection JSUnresolvedVariable
                     if (lexicalEntry.pronunciations) {
@@ -110,7 +110,7 @@ function ready() {
                             ) {
                                 pronunciations.push(pronunciation.phoneticSpelling);
                                 // noinspection JSUnresolvedVariable
-                                resultElement.innerHTML += '<p>' + pronunciation.dialects + ': <code>' + pronunciation.phoneticSpelling + '</code></p>';
+                                resultElement.innerHTML += '<p>' + chopText(pronunciation.dialects.join(', ')) + ': <code>' + pronunciation.phoneticSpelling + '</code></p>';
                             }
 
                             // noinspection JSUnresolvedVariable
@@ -131,14 +131,22 @@ function ready() {
                                     if (sense.definitions) {
                                         // noinspection JSUnresolvedVariable
                                         sense.definitions.forEach(function (definition) {
-                                            resultElement.innerHTML += '<p>Definition: ' + chopText(definition) + '</p>';
+                                            resultElement.innerHTML += '<p>' + chopText('Definition') + ': ' + chopText(definition) + '</p>';
                                         });
                                     }
                                     // noinspection JSUnresolvedVariable
                                     if (sense.examples) {
                                         sense.examples.forEach(function (example) {
                                             if (example.text) {
-                                                resultElement.innerHTML += '<p>Example: <cite>' + chopText(example.text) + '</cite></p>';
+                                                resultElement.innerHTML += '<p>' + chopText('Example') + ': <cite>' + chopText(example.text) + '</cite></p>';
+                                            }
+                                        });
+                                    }
+                                    // noinspection JSUnresolvedVariable
+                                    if (sense.short_definitions) {
+                                        sense.short_definitions.forEach(function (shortDefinition) {
+                                            if (shortDefinition) {
+                                                resultElement.innerHTML += '<p>' + chopText('Short definition') + ': <cite>' + chopText(shortDefinition) + '</cite></p>';
                                             }
                                         });
                                     }
@@ -175,7 +183,7 @@ function ready() {
 
         let textWords = text.split(' ');
         textWords.forEach(function (textWord) {
-            result += ' ' + '<span class="js-text-word" onclick="selectTextWord(this)">' + textWord + '</span>';
+            result += ' ' + '<span class="text-word js-text-word" onclick="selectTextWord(this)">' + textWord + '</span>';
         });
 
         return result;
