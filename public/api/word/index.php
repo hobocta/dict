@@ -42,8 +42,9 @@ try {
      * @param $word
      * @param array $params
      * @return mixed
+     * @throws Exception
      */
-    function oxforddictionaries_entries($word, array $params)
+    function oxforddictionaries_entries(string $word, array $params)
     {
         try {
 
@@ -114,7 +115,13 @@ try {
         return $gatewayResponse['results'];
     }
 
-    function oxforddictionaries_entries_cached($word, array $params)
+    /**
+     * @param $word
+     * @param array $params
+     * @return mixed|null
+     * @throws Exception
+     */
+    function oxforddictionaries_entries_cached(string $word, array $params)
     {
         $cache = new FilesystemCache();
 
