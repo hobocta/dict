@@ -1,3 +1,4 @@
+// noinspection JSUnresolvedFunction
 document.addEventListener('DOMContentLoaded', ready);
 
 function ready() {
@@ -37,8 +38,10 @@ function ready() {
     }
 
     function initEventsListeners() {
+        // noinspection JSUnresolvedFunction
         formElement.addEventListener('submit', formSubmitHandler);
 
+        // noinspection JSUnresolvedFunction
         toTopButtonElement.addEventListener('click', toTopButtonClickHandler);
     }
 
@@ -95,12 +98,14 @@ function ready() {
                     }
                     // noinspection JSUnresolvedVariable
                     if (lexicalEntry.lexicalCategory) {
+                        // noinspection JSUnresolvedVariable
                         resultElement.innerHTML += '<p><b>' + chopText(lexicalEntry.lexicalCategory) + '</b></p>';
                     }
                     // noinspection JSUnresolvedVariable
                     if (lexicalEntry.pronunciations) {
                         let pronunciations = [];
 
+                        // noinspection JSUnresolvedVariable
                         lexicalEntry.pronunciations.forEach(function (pronunciation) {
                             // noinspection JSUnresolvedVariable
                             if (
@@ -108,6 +113,7 @@ function ready() {
                                 && pronunciation.phoneticSpelling
                                 && pronunciations.indexOf(pronunciation.phoneticSpelling) === -1
                             ) {
+                                // noinspection JSUnresolvedVariable
                                 pronunciations.push(pronunciation.phoneticSpelling);
                                 // noinspection JSUnresolvedVariable
                                 resultElement.innerHTML += '<p>' + chopText(pronunciation.dialects.join(', ')) + ': <code>' + pronunciation.phoneticSpelling + '</code></p>';
@@ -136,6 +142,7 @@ function ready() {
                                     }
                                     // noinspection JSUnresolvedVariable
                                     if (sense.examples) {
+                                        // noinspection JSUnresolvedVariable
                                         sense.examples.forEach(function (example) {
                                             if (example.text) {
                                                 resultElement.innerHTML += '<p>' + chopText('Example') + ': <cite>' + chopText(example.text) + '</cite></p>';
@@ -144,6 +151,7 @@ function ready() {
                                     }
                                     // noinspection JSUnresolvedVariable
                                     if (sense.short_definitions) {
+                                        // noinspection JSUnresolvedVariable
                                         sense.short_definitions.forEach(function (shortDefinition) {
                                             if (shortDefinition) {
                                                 resultElement.innerHTML += '<p>' + chopText('Short definition') + ': <cite>' + chopText(shortDefinition) + '</cite></p>';
