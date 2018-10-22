@@ -141,20 +141,20 @@ function ready() {
                                         });
                                     }
                                     // noinspection JSUnresolvedVariable
+                                    if (sense.short_definitions) {
+                                        // noinspection JSUnresolvedVariable
+                                        sense.short_definitions.forEach(function (shortDefinition) {
+                                            if (shortDefinition) {
+                                                resultElement.innerHTML += '<p>' + chopText('Short definition') + ': ' + chopText(shortDefinition) + '</p>';
+                                            }
+                                        });
+                                    }
+                                    // noinspection JSUnresolvedVariable
                                     if (sense.examples) {
                                         // noinspection JSUnresolvedVariable
                                         sense.examples.forEach(function (example) {
                                             if (example.text) {
                                                 resultElement.innerHTML += '<p>' + chopText('Example') + ': <cite>' + chopText(example.text) + '</cite></p>';
-                                            }
-                                        });
-                                    }
-                                    // noinspection JSUnresolvedVariable
-                                    if (sense.short_definitions) {
-                                        // noinspection JSUnresolvedVariable
-                                        sense.short_definitions.forEach(function (shortDefinition) {
-                                            if (shortDefinition) {
-                                                resultElement.innerHTML += '<p>' + chopText('Short definition') + ': <cite>' + chopText(shortDefinition) + '</cite></p>';
                                             }
                                         });
                                     }
