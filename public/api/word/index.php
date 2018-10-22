@@ -55,7 +55,7 @@ try {
             }
 
             $url = sprintf(
-                'https://od-api.oxforddictionaries.com/api/v1/entries/en/%s/regions=us',
+                'https://od-api.oxforddictionaries.com/api/v1/entries/en/%s',
                 $word
             );
             $headers = array(
