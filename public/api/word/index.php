@@ -2,7 +2,7 @@
 
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
@@ -123,15 +123,19 @@ try {
      */
     function oxforddictionaries_entries_cached(string $word, array $params)
     {
-        $cache = new FilesystemCache();
+        $cache = new FilesystemAdapter(
+            '',
+            3600,
+            __DIR__ . '/../../../cache'
+        );
 
         $cacheKey = sprintf('oxforddictionaries.entries.%s', $word);
 
-        if (!$cache->has($cacheKey)) {
-            $cache->set($cacheKey, oxforddictionaries_entries($word, $params));
-        }
+        $value = $cache->get($cacheKey, function () use ($word, $params) {
+            return json_encode([$word, $params]);
+        });
 
-        return $cache->get($cacheKey);
+        return $value;
     }
 
     $request['word'] = strtolower($request['word']);
