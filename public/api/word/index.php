@@ -72,7 +72,7 @@ try {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-            curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+            curl_setopt($ch, CURLOPT_VERBOSE, true);
 
             $gatewayResponseRaw = curl_exec($ch);
             if (curl_errno($ch)) {
