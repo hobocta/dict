@@ -1,5 +1,5 @@
 /.idea/
-/cache/
 /config/config.php
-/logs/
+/var/cache/
+/var/logs/
 /vendor/

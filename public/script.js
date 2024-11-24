@@ -165,7 +165,7 @@ function ready() {
 
                     if (lexicalEntry.text) {
                         resultElement.innerHTML += '<p>';
-                        resultElement.innerHTML += '<a target="_blank" href="https://translate.google.com/#en/ru/' + lexicalEntry.text + '">Translate</a>, ';
+                        resultElement.innerHTML += '<a target="_blank" href="https://translate.google.com/?sl=en&op=translate&text=' + lexicalEntry.text + '">Translate</a>, ';
                         resultElement.innerHTML += '<a target="_blank" href="https://www.google.ru/search?q=' + lexicalEntry.text + '&tbm=isch">images</a>';
                         resultElement.innerHTML += '</p>';
                     }
@@ -174,15 +174,8 @@ function ready() {
 
             historyPushState(word);
 
-            wordElement.value = '';
             wordElement.blur();
             toTopButtonElement.classList.add('_show');
-            setTimeout(function () {
-                resultElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 300);
         }
     }
 
@@ -193,7 +186,14 @@ function ready() {
     function chopText(text) {
         let result = '';
 
+        console.log('typeof text', typeof text, text);
+
+        if (typeof text !== 'string') {
+            return result;
+        }
+
         let textWords = text.split(' ');
+
         textWords.forEach(function (textWord) {
             result += ' ' + '<span class="text-word js-text-word" onclick="selectTextWord(this)">' + textWord + '</span>';
         });
