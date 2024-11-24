@@ -1,0 +1,14 @@
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    stu = status -uno
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    type = cat-file -t
+    dump = cat-file -p
+    lr = log --oneline --left-right
+[color]
+    ui = auto
+[push]
+    default = simple

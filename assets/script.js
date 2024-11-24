@@ -62,11 +62,11 @@ function ready() {
         resultElement.innerHTML = 'loading...';
 
         let word = filterWordString(wordElement.value);
-        let data = {word: word};
+        let data = { word: word };
         let json = JSON.stringify(data);
 
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', 'api/word/', true);
+        xhr.open('POST', 'api/word', true);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         xhr.send(json);
         /**
