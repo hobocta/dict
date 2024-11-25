@@ -4,10 +4,12 @@
 
 namespace App\Controller;
 
+use App\Dto\Request\WordDto;
 use App\Service\DictService;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -20,32 +22,20 @@ class ApiController extends AbstractController
      *
      * @param DictService $dictService
      */
-    public function __construct(private DictService $dictService)
+    public function __construct(private readonly DictService $dictService)
     {
     }
 
     /**
-     * @param Request $request
+     * @param WordDto $wordDto
      *
      * @return Response
+     * @throws InvalidArgumentException
      */
     #[Route('/api/word', methods: ['POST'])]
     public function main(
-        Request $request
+        #[MapRequestPayload] WordDto $wordDto
     ): Response {
-        // @todo move to param converter
-        $requestBody = json_decode($request->getContent(), true, JSON_THROW_ON_ERROR);
-
-        $word = $requestBody['word'] ?? null;
-
-        if (empty($word)) {
-            return new Response('Empty word', Response::HTTP_BAD_REQUEST);
-        }
-
-        if (!preg_match('/^[a-z]+$/', $word)) {
-            return new Response('Incorrect word', Response::HTTP_BAD_REQUEST);
-        }
-
-        return $this->json($this->dictService->getEntriesCached($word));
+        return $this->json($this->dictService->getEntriesCached($wordDto->getWord()));
     }
 }

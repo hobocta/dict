@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Exception\AppException;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -49,6 +50,7 @@ class DictService
      * @param string $word
      *
      * @return array
+     * @throws InvalidArgumentException
      */
     public function getEntriesCached(string $word): array
     {
@@ -77,7 +79,7 @@ class DictService
     public function getEntries(string $word): array
     {
         try {
-            // @todo move to client calss
+            // @todo move to client class
             $url = sprintf(
                 'https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/%s/%s',
                 $this->sourceLang,
