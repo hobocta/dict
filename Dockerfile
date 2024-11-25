@@ -28,8 +28,6 @@ RUN echo "export LANG=C.UTF-8" >> /root/.bashrc && \
     echo "export LANGUAGE=C.UTF-8" >> /root/.bashrc && \
     echo "export LC_ALL=C.UTF-8" >> /root/.bashrc
 
-COPY .gitconfig /root/.gitconfig
-
 RUN rm -r /var/www/html && ln -s /var/app/public /var/www/html
 
 COPY var/ssl/server.key /etc/ssl/private/server.key
