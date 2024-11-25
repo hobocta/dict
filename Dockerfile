@@ -10,6 +10,20 @@ RUN ln -s /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
 RUN wget https://get.symfony.com/cli/installer -O - | bash
 RUN export PATH="$HOME/.symfony5/bin:$PATH"
 
+RUN cd  && \
+    wget -O xdebug.zip https://github.com/xdebug/xdebug/archive/refs/heads/master.zip && \
+    unzip xdebug.zip && \
+    rm xdebug.zip && \
+    cd xdebug-master/ && \
+    chmod u+x rebuild.sh && \
+    ./rebuild.sh && \
+    make test && \
+    echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/99-xdebug.ini && \
+    echo "xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/99-xdebug.ini && \
+    echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/99-xdebug.ini && \
+    echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/99-xdebug.ini && \
+    echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/99-xdebug.ini
+
 RUN echo "export LANG=C.UTF-8" >> /root/.bashrc && \
     echo "export LANGUAGE=C.UTF-8" >> /root/.bashrc && \
     echo "export LC_ALL=C.UTF-8" >> /root/.bashrc
