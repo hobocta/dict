@@ -4,9 +4,6 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    dict.appId: '%env(APP_DICT_APP_ID)%'
-    dict.appKey: '%env(APP_DICT_APP_KEY)%'
-    dict.sourceLang: '%env(APP_DICT_SOURCE_LANG)%'
 
 services:
     # default configuration for services in *this* file
@@ -20,8 +17,17 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
+            - '../src/Dto/'
             - '../src/Entity/'
+            - '../src/Exception/'
             - '../src/Kernel.php'
+
+    App\Client\DictClient:
+        class: App\Client\DictClient
+        arguments:
+            $appId: '%env(APP_DICT_APP_ID)%'
+            $appKey: '%env(APP_DICT_APP_KEY)%'
+            $sourceLang: '%env(APP_DICT_SOURCE_LANG)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -1,160 +1,164 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
-use App\Exception\AppException;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Logger;
+use App\Client\DictClient;
+use App\Dto\Response\WordDto;
+use Exception;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 
 /**
  * Class DictService
  * @package App\Service
  */
-class DictService
+readonly class DictService
 {
-    /**
-     * @var string
-     */
-    private string $logDir;
-
-    /**
-     * @var string
-     */
-    private string $cacheDir;
-
-    private string $sourceLang;
-    private string $appId;
-    private string $appKey;
-
     /**
      * DictService constructor.
      *
-     * @param KernelInterface $kernel
-     * @param ParameterBagInterface $params
+     * @param CacheItemPoolInterface $cacheItemPool
+     * @param DictClient $dictClient
+     * @param LoggerInterface $logger
      */
-    public function __construct(KernelInterface $kernel, private ParameterBagInterface $params)
-    {
-        $this->logDir = $kernel->getLogDir();
-        $this->cacheDir = $kernel->getCacheDir();
-
-        $this->sourceLang = (string)$this->params->get('dict.sourceLang');
-        $this->appId = (string)$this->params->get('dict.appId');
-        $this->appKey = (string)$this->params->get('dict.appKey');
+    public function __construct(
+        private CacheItemPoolInterface $cacheItemPool,
+        private DictClient $dictClient,
+        private LoggerInterface $logger
+    ) {
     }
 
     /**
      * @param string $word
      *
-     * @return array
-     * @throws InvalidArgumentException
+     * @return WordDto
      */
-    public function getEntriesCached(string $word): array
-    {
-        $word = mb_strtolower($word);
-
-        // @todo use cache from container
-        $cache = new FilesystemAdapter(
-            '',
-            31536000, // 1 year
-            $this->cacheDir . '/appDict'
-        );
-
-        $cacheKey = sprintf('oxforddictionaries.entries.%s', md5($word));
-
-        return $cache->get($cacheKey, function () use ($word) {
-            return $this->getEntries($word);
-        });
-    }
-
-    /**
-     * @param string $word
-     *
-     * @return array
-     * @throws AppException
-     */
-    public function getEntries(string $word): array
+    public function getWordDtoCached(string $word): WordDto
     {
         try {
-            // @todo move to client class
-            $url = sprintf(
-                'https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/%s/%s',
-                $this->sourceLang,
-                $word
+            $cacheKey = sprintf('dict.entries.%s', $word);
+
+            $cacheItem = $this->cacheItemPool->getItem($cacheKey);
+
+            if ($cacheItem->isHit()) {
+                return $cacheItem->get();
+            }
+
+            $wordDto = $this->getWordDto($word);
+
+            $this->cacheItemPool->save(
+                $cacheItem
+                    ->set($wordDto)
+                    ->expiresAfter(
+                        !empty($wordDto->getError())
+                            ? 3600  // 1 hour
+                            : 31536000 // 1 year
+                    )
             );
-            $headers = [
-                'Accept: application/json',
-                'app_id: ' . $this->appId,
-                'app_key: ' . $this->appKey,
-            ];
+        } catch (InvalidArgumentException $e) {
+            $wordDto = $this->createWordDtoError($e->getMessage());
+        }
 
-            // @todo use guzzle
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-            curl_setopt($ch, CURLOPT_VERBOSE, true);
+        return $wordDto;
+    }
 
-            $gatewayResponseRaw = curl_exec($ch);
-            if (curl_errno($ch)) {
-                throw new AppException(curl_error($ch));
-            }
-            $info = curl_getinfo($ch);
+    /**
+     * @param string $word
+     *
+     * @return WordDto
+     */
+    public function getWordDto(string $word): WordDto
+    {
+        try {
+            [$statusCode, $content] = $this->dictClient->requestEntries($word);
 
-            if ($info['http_code'] === 404) {
-                throw new AppException('Word not found');
-            }
-            if ($info['http_code'] !== 200) {
-                throw new AppException('Http code is ' . $info['http_code']);
-            }
-            curl_close($ch);
+            return $this->createWordDto($statusCode, $content);
+        } catch (ExceptionInterface $e) {
+            $this->logException($e);
 
-            $gatewayResponse = json_decode($gatewayResponseRaw, true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new AppException('Incorrect gateway response');
-            }
-
-            if (empty($gatewayResponse['results'])) {
-                throw new AppException('Empty gateway results');
-            }
-
-            if (!is_array($gatewayResponse['results'])) {
-                throw new AppException('Gateway results is not array');
-            }
-
-            $this->getLogger()->debug('', ['word' => $word, 'response' => $gatewayResponse]);
-
-            return ['results' => $gatewayResponse['results']];
-        } catch (AppException $e) {
-            $this->getLogger()->error($e->getMessage(),
-                [
-                    'class' => get_class($e),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                    'word' => $word,
-                    'response' => $gatewayResponse ?? null,
-                    'info' => $info ?? null,
-                ]
-            );
-
-            throw $e;
+            return $this->createWordDtoError($e->getMessage());
         }
     }
 
     /**
-     * @return Logger
+     * @param int $statusCode
+     * @param string $content
+     *
+     * @return WordDto
      */
-    private function getLogger(): Logger
+    private function createWordDto(int $statusCode, string $content): WordDto
     {
-        return (new Logger('oxforddictionaries_entries'))
-            ->pushHandler(new RotatingFileHandler($this->logDir . '/dict.log', 30));
+        if ($statusCode === 404) {
+            return $this->createWordDtoError('Word not found');
+        }
+
+        if ($statusCode !== 200) {
+            return $this->createWordDtoError('Http code is ' . $statusCode);
+        }
+
+        $responseJson = json_decode($content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $this->createWordDtoError('Incorrect gateway response');
+        }
+
+        if (empty($responseJson['results'])) {
+            return $this->createWordDtoError('Empty results');
+        }
+
+        if (!is_array($responseJson['results'])) {
+            return $this->createWordDtoError('Results is not array');
+        }
+
+        return $this->createWordDtoSuccess($responseJson['results']);
+    }
+
+    /**
+     * @param string $error
+     *
+     * @return WordDto
+     */
+    private function createWordDtoError(string $error): WordDto
+    {
+        return $this->createEmptyWordDto()->setError($error);
+    }
+
+    /**
+     * @return WordDto
+     */
+    private function createEmptyWordDto(): WordDto
+    {
+        return (new WordDto());
+    }
+
+    /**
+     * @param array $results
+     *
+     * @return WordDto
+     */
+    private function createWordDtoSuccess(array $results): WordDto
+    {
+        return $this->createEmptyWordDto()->setResults($results);
+    }
+
+    /**
+     * @param Exception $e
+     *
+     * @return void
+     */
+    private function logException(Exception $e): void
+    {
+        $this->logger->error(
+            $e->getMessage(),
+            [
+                'class' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]
+        );
     }
 }
