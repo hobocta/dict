@@ -47,8 +47,8 @@ function ready() {
         initWordIds(languageElement.value);
 
         if (window.location.hash) {
-            let word = window.location.hash.replace(/^#/, '');
-            searchWord(word);
+            let wordId = decodeURI(window.location.hash.replace(/^#/, ''));
+            searchWord(wordId);
             return;
         }
 
