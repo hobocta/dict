@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Dto\Response;
+namespace App\Dto\Api\Response;
 
 /**
- * Class WordDto
- * @package App\Dto\Request
+ * Class AbstractResponseDto
+ * @package App\Dto\Api\Response
  */
-class WordDto
+abstract class AbstractResponseDto implements InterfaceResponseDto
 {
     protected string $error = '';
 
@@ -53,5 +53,10 @@ class WordDto
         $this->results = $results;
 
         return $this;
+    }
+
+    public function isError(): bool
+    {
+        return !empty($this->error);
     }
 }

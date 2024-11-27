@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', ready);
 
 function ready() {
     let formElement = document.getElementsByClassName('js-form')[0];
+    let languageElement = formElement.getElementsByClassName('js-form-language')[0];
     let wordElement = formElement.getElementsByClassName('js-form-word')[0];
     let resultElement = document.getElementsByClassName('js-form-result')[0];
     let toTopButtonElement = document.getElementsByClassName('to-top')[0];
@@ -61,12 +62,19 @@ function ready() {
     function formSubmit() {
         resultElement.innerHTML = 'loading...';
 
-        let word = filterWordString(wordElement.value);
-        let data = { word: word };
+        let wordId = filterWordString(wordElement.value);
+        let language = filterLanguageString(languageElement.value);
+        let [sourceLanguageId, targetLanguageId] = language.split('-');
+        let data = {
+            wordId: wordId,
+            sourceLanguageId: sourceLanguageId,
+            targetLanguageId: targetLanguageId
+        };
+        console.log('data', data);
         let json = JSON.stringify(data);
 
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', 'api/word', true);
+        xhr.open('POST', 'api/translation', true);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         xhr.send(json);
         /**
@@ -158,6 +166,15 @@ function ready() {
                                             }
                                         });
                                     }
+                                    // noinspection JSUnresolvedVariable
+                                    if (sense.translations) {
+                                        // noinspection JSUnresolvedVariable
+                                        sense.translations.forEach(function (translation) {
+                                            if (translation.text) {
+                                                resultElement.innerHTML += '<p>' + chopText('Translation') + ': <cite>' + chopText(translation.text) + '</cite></p>';
+                                            }
+                                        });
+                                    }
                                 });
                             }
                         });
@@ -172,15 +189,19 @@ function ready() {
                 });
             }
 
-            historyPushState(word);
+            historyPushState(wordId);
 
             wordElement.blur();
             toTopButtonElement.classList.add('_show');
         }
     }
 
-    function filterWordString(word) {
-        return word.trim().toLowerCase().replace(/[^a-z]+/, '');
+    function filterWordString(string) {
+        return string.trim().toLowerCase();
+    }
+
+    function filterLanguageString(string) {
+        return string.trim().toLowerCase().replace(/[^a-z-]+/, '');
     }
 
     function chopText(text) {

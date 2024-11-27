@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Dto\Request\WordDto;
+use App\Dto\Api\Request\TranslationRequestDto;
 use App\Service\DictService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,14 +28,28 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @param WordDto $wordDto
+     * @return Response
+     */
+    #[Route('/api/languages', methods: ['GET'])]
+    public function languages(): Response {
+        return $this->json($this->dictService->getLanguagesDtoCached());
+    }
+
+    /**
+     * @param TranslationRequestDto $translationRequestDto
      *
      * @return Response
      */
-    #[Route('/api/word', methods: ['POST'])]
-    public function main(
-        #[MapRequestPayload] WordDto $wordDto
+    #[Route('/api/translation', methods: ['POST'])]
+    public function word(
+        #[MapRequestPayload] TranslationRequestDto $translationRequestDto
     ): Response {
-        return $this->json($this->dictService->getWordDtoCached($wordDto->getWord()));
+        return $this->json(
+            $this->dictService->getWordDtoCached(
+                $translationRequestDto->getSourceLanguageId(),
+                $translationRequestDto->getTargetLanguageId(),
+                $translationRequestDto->getWordId()
+            )
+        );
     }
 }

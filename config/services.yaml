@@ -27,7 +27,8 @@ services:
         arguments:
             $appId: '%env(APP_DICT_APP_ID)%'
             $appKey: '%env(APP_DICT_APP_KEY)%'
-            $sourceLang: '%env(APP_DICT_SOURCE_LANG)%'
+            $apiUrl: '%env(APP_DICT_API_URL)%'
+            $apiTimeout: '%env(APP_DICT_API_TIMEOUT)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
