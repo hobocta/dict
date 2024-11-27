@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnused */
+
 declare(strict_types=1);
 
 /** @noinspection PhpUnused */
@@ -20,8 +22,9 @@ class PageController extends AbstractController
      * PageController constructor.
      *
      * @param DictService $dictService
+     * @param string $env
      */
-    public function __construct(private readonly DictService $dictService)
+    public function __construct(private readonly DictService $dictService, private readonly string $env)
     {
     }
 
@@ -32,6 +35,7 @@ class PageController extends AbstractController
             'main.html.twig',
             [
                 'languages' => $this->dictService->getLanguagesDtoCached(),
+                'env' => $this->env,
             ]
         );
     }

@@ -6,6 +6,10 @@
     opacity: .5;
 }
 
+body.env-dev .to-top {
+    bottom: 51px;
+}
+
 .to-top._show {
     display: block;
 }
