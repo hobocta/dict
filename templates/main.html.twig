@@ -20,9 +20,9 @@
                 {% if languages.error is empty %}
                     <select class="form-control js-form-language" name="language">
                         {% for language in languages.results %}
-                            <option value="{{ language.sourceLanguage.id }}-{{ language.targetLanguage.id }}">
-                                {{ language.source }}
-                            </option>
+                            <option value="{{ language.sourceLanguage.id }}-{{ language.targetLanguage.id }}">{{
+                                language.source
+                            }}</option>
                         {% endfor %}
                     </select>
                 {% else %}

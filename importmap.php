@@ -16,4 +16,7 @@ return [
         'path' => './assets/script.js',
         'entrypoint' => true,
     ],
+    'axios' => [
+        'version' => '1.7.8',
+    ],
 ];

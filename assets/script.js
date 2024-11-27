@@ -1,3 +1,5 @@
+import { default as axios } from './vendor/axios/axios.index.js';
+
 // noinspection JSUnresolvedFunction
 document.addEventListener('DOMContentLoaded', ready);
 
@@ -138,49 +140,37 @@ function ready() {
     function formSubmit() {
         resultElement.innerHTML = 'loading...';
 
-        let wordId = filterWordString(wordElement.value);
-        let languageValue = languageElement.value;
-        let language = filterLanguageString(languageValue);
-        let [sourceLanguageId, targetLanguageId] = language.split('-');
-        let data = {
-            wordId: wordId, sourceLanguageId: sourceLanguageId, targetLanguageId: targetLanguageId
+        const wordId = filterWordString(wordElement.value);
+
+        const languageValue = languageElement.value;
+        const language = filterLanguageString(languageValue);
+        const [sourceLanguageId, targetLanguageId] = language.split('-');
+
+        const data = {
+            wordId: wordId,
+            sourceLanguageId: sourceLanguageId,
+            targetLanguageId: targetLanguageId
         };
-        let json = JSON.stringify(data);
 
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', 'api/translation', true);
-        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-        xhr.send(json);
-        /**
-         * @param event.target
-         */
-        xhr.onreadystatechange = function (event) {
-            if (event.target.readyState !== 4) return;
+        // noinspection JSUnresolvedReference
+        axios.post('api/translation', data)
+            .then(function (response) {
+                if (response.data.error) {
+                    showError(response.data.error);
 
-            resultElement.innerHTML = '';
+                    return;
+                }
 
-            if (event.target.status !== 200) {
-                resultElement.innerText = event.target.status + ': ' + event.target.statusText;
-                return;
-            }
+                saveWord(languageValue, wordId);
+                historyPushState(wordId);
+                showResults(response.data);
 
-            let response = JSON.parse(event.target.responseText);
-
-            if (response.error) {
-                showError(response.error);
-
-                return;
-            }
-
-            saveWord(languageValue, wordId);
-
-            showResults(response);
-
-            historyPushState(wordId);
-
-            wordElement.blur();
-            toTopButtonElement.classList.add('_show');
-        }
+                wordElement.blur();
+                toTopButtonElement.classList.add('_show');
+            })
+            .catch(function (error) {
+                showError(error);
+            });
     }
 
     function filterWordString(string) {
@@ -232,6 +222,8 @@ function ready() {
     }
 
     function showResults(response) {
+        resultElement.innerHTML = '';
+
         // noinspection JSUnresolvedVariable
         if (!response.results || !response.results[0] || !response.results[0].lexicalEntries) {
             return;
