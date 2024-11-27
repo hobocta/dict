@@ -1,6 +1,6 @@
 # Dict
 
-English to english dictionary
+Oxford Dictionaries
 
 ### Install
 
