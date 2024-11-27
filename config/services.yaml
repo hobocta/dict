@@ -34,6 +34,7 @@ services:
         class: App\Controller\PageController
         arguments:
             $env: '%env(APP_ENV)%'
+            $defaultTranslate: '%env(APP_DICT_DEFAULT_TRANSLATE)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

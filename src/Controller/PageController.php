@@ -23,9 +23,13 @@ class PageController extends AbstractController
      *
      * @param DictService $dictService
      * @param string $env
+     * @param string $defaultTranslate
      */
-    public function __construct(private readonly DictService $dictService, private readonly string $env)
-    {
+    public function __construct(
+        private readonly DictService $dictService,
+        private readonly string $env,
+        private readonly string $defaultTranslate
+    ) {
     }
 
     #[Route('/', methods: ['GET'])]
@@ -36,6 +40,7 @@ class PageController extends AbstractController
             [
                 'languages' => $this->dictService->getLanguagesDtoCached(),
                 'env' => $this->env,
+                'defaultTranslate' => $this->defaultTranslate,
             ]
         );
     }

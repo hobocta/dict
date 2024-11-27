@@ -20,9 +20,13 @@
                 {% if languages.error is empty %}
                     <select class="form-control js-form-language" name="language">
                         {% for language in languages.results %}
-                            <option value="{{ language.sourceLanguage.id }}-{{ language.targetLanguage.id }}">{{
-                                language.source
-                            }}</option>
+                            <option {#
+                                #}{% if defaultTranslate == language.sourceLanguage.id ~ '-' ~ language.targetLanguage.id %}
+                                selected
+                            {% endif %}{#
+                            #}value="{{ language.sourceLanguage.id }}-{{ language.targetLanguage.id }}">{#
+                                #}{{ language.source }}{#
+                                #}</option>
                         {% endfor %}
                     </select>
                 {% else %}
