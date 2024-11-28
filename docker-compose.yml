@@ -5,9 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     expose:
       - 9003
+    working_dir: /var/app
     volumes:
       - .:/var/app

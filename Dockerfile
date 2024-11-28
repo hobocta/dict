@@ -10,7 +10,7 @@ RUN ln -s /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
 RUN wget https://get.symfony.com/cli/installer -O - | bash
 RUN export PATH="$HOME/.symfony5/bin:$PATH"
 
-RUN cd  && \
+RUN cd && \
     wget -O xdebug.zip https://github.com/xdebug/xdebug/archive/refs/heads/master.zip && \
     unzip xdebug.zip && \
     rm xdebug.zip && \
@@ -30,8 +30,14 @@ RUN echo "export LANG=C.UTF-8" >> /root/.bashrc && \
 
 RUN rm -r /var/www/html && ln -s /var/app/public /var/www/html
 
-COPY var/ssl/server.key /etc/ssl/private/server.key
-COPY var/ssl/server.crt /etc/ssl/certs/server.pem
+RUN mkdir -p /var/ssl && \
+    cd /var/ssl && \
+    openssl genrsa -out server.key 2048 && \
+    openssl req -new -key server.key -out server.csr -subj "/C=/ST=/L=/O=/OU=/CN=" && \
+    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt && \
+    cat server.crt server.key > server.pem && \
+    cp /var/ssl/server.key /etc/ssl/private/server.key && \
+    cp /var/ssl/server.crt /etc/ssl/certs/server.pem
 
 RUN echo "ServerName localhost:80" >> /etc/apache2/apache2.conf
 RUN sed -i 's/ssl-cert-snakeoil/server/' /etc/apache2/sites-available/default-ssl.conf
