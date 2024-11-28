@@ -12,6 +12,8 @@ mkdir -p var/ssl && \
   cat var/ssl/server.crt var/ssl/server.key > var/ssl/server.pem
 
 docker-compose build
+docker-compose up -d
+docker-compose exec php bash -c 'cd /var/app && composer install'
 ```
 
 # API Credentials
