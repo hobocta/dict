@@ -5,11 +5,12 @@ Oxford Dictionaries
 ### Install
 
 ```bash
-mkdir -p var/ssl
-openssl genrsa -out var/ssl/server.key 2048
-openssl req -new -key var/ssl/server.key -out var/ssl/server.csr
-openssl x509 -req -days 365 -in var/ssl/server.csr -signkey var/ssl/server.key -out var/ssl/server.crt
-cat var/ssl/server.crt var/ssl/server.key > var/ssl/server.pem
+mkdir -p var/ssl && \
+  openssl genrsa -out var/ssl/server.key 2048 && \
+  openssl req -new -key var/ssl/server.key -out var/ssl/server.csr -subj "/C=/ST=/L=/O=/OU=/CN=" && \
+  openssl x509 -req -days 365 -in var/ssl/server.csr -signkey var/ssl/server.key -out var/ssl/server.crt && \
+  cat var/ssl/server.crt var/ssl/server.key > var/ssl/server.pem
+
 docker-compose build
 ```
 
