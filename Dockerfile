@@ -8,7 +8,7 @@ RUN composer global require phpunit/phpunit -q
 RUN ln -s /root/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
 
 RUN wget https://get.symfony.com/cli/installer -O - | bash
-RUN export PATH="$HOME/.symfony5/bin:$PATH"
+RUN echo 'export PATH="$HOME/.symfony5/bin:$PATH"' >> /root/.bashrc
 
 RUN cd && \
     wget -O xdebug.zip https://github.com/xdebug/xdebug/archive/refs/heads/master.zip && \
