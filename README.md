@@ -5,7 +5,8 @@ Oxford Dictionaries
 ### Install
 
 ```bash
-docker-compose up -d && docker-compose exec php composer install
+docker-compose up -d && \
+    docker-compose exec php composer install
 ```
 
 # API Credentials
